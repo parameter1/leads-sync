@@ -5,7 +5,7 @@ const createDate = require('../marketing-cloud/utils/create-date');
 
 const { log } = console;
 
-const run = async () => {
+exports.handler = async () => {
   const date = createDate('9/4/2020 11:59:59 PM');
   log(date.toISOString());
   const response = await getRows({ date });
@@ -50,5 +50,3 @@ const run = async () => {
     status: OverallStatus,
   });
 };
-
-run().catch((e) => setImmediate(() => { throw e; }));
