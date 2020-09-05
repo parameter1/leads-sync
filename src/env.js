@@ -6,7 +6,12 @@ const {
 
 module.exports = cleanEnv(process.env, {
   AWS_ACCOUNT_ID: str({ desc: 'The AWS account ID. This is _not_ provided by the lambda runtime' }),
+
+  // when executing in lambda, these values will be provided at runtime
   AWS_REGION: str({ desc: 'The AWS region. This will be provided by the lambda runtime.' }),
+  AWS_ACCESS_KEY_ID: str({ desc: 'This will be provided by the lambda runtime.' }),
+  AWS_SECRET_ACCESS_KEY: str({ desc: 'This will be provided by the lambda runtime.' }),
+
   FUEL_API_AUTH_URL: str({ desc: 'The authentication base URI' }),
   FUEL_API_CLIENT_ID: str({ desc: 'The Marketing Cloud API client ID.' }),
   FUEL_API_CLIENT_SECRET: str({ desc: 'The Marketing Cloud API client secret.' }),
