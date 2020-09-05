@@ -5,10 +5,14 @@ const createDate = require('../marketing-cloud/utils/create-date');
 
 const { log } = console;
 
-exports.handler = async () => {
+exports.handler = async (event) => {
   const date = createDate('9/4/2020 11:59:59 PM');
-  log(date.toISOString());
+  log({ date: date.toISOString() });
   const response = await getRows({ date });
+
+  const { queryStringParameters = {} } = event;
+  const { requestId } = queryStringParameters;
+  log({ requestId });
 
   // @todo handle paging
   const { Results, OverallStatus } = response;
