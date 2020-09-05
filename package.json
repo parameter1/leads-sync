@@ -1,0 +1,21 @@
+{
+  "name": "@parameter1/leads-sync",
+  "version": "0.0.0",
+  "description": "Syncs Marketing Cloud events and data models, using Lambda and SQS",
+  "repository": "https://zarathustra323@github.com/parameter1/leads-sync.git",
+  "author": "Jacob Bare <jacob@parameter1.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@marketing-cloud/rest": "^0.1.0",
+    "@marketing-cloud/soap": "^0.1.3",
+    "@parameter1/mongodb": "^1.2.3",
+    "@parameter1/utils": "^1.1.2",
+    "envalid": "^6.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.8.1",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0"
+  }
+}
