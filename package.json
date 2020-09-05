@@ -14,6 +14,7 @@
     "moment": "^2.27.0"
   },
   "devDependencies": {
+    "aws-sdk": "^2.747.0",
     "eslint": "^7.8.1",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0"
