@@ -11,7 +11,7 @@ module.exports = cleanEnv(process.env, {
   AWS_REGION: str({ desc: 'The AWS region. This will be provided by the lambda runtime.' }),
   AWS_ACCESS_KEY_ID: str({ desc: 'This will be provided by the lambda runtime.' }),
   AWS_SECRET_ACCESS_KEY: str({ desc: 'This will be provided by the lambda runtime.' }),
-  AWS_EXECUTION_ENV: str({ desc: 'This will be provided by the lambda runtime.' }),
+  AWS_EXECUTION_ENV: str({ desc: 'This will be provided by the lambda runtime.', default: undefined }),
 
   FUEL_API_AUTH_URL: str({ desc: 'The authentication base URI' }),
   FUEL_API_CLIENT_ID: str({ desc: 'The Marketing Cloud API client ID.' }),

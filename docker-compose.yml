@@ -1,0 +1,32 @@
+version: '3.7'
+
+x-env-defaults: &env
+  NODE_ENV: development
+
+x-node-defaults: &node
+  tty: true
+  init: true
+  image: node:12.15-alpine
+  working_dir: /sync
+  restart: always
+  volumes:
+    - .:/sync:cached
+    - ./node_modules:/sync/node_modules:delegated
+  environment:
+    <<: *env
+
+services:
+  test:
+    <<: *node
+    working_dir: /sync/src
+    entrypoint: ["node", "test"]
+    environment:
+      <<: *env
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_ACCOUNT_ID: 598984531759
+      AWS_REGION: us-east-2
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      FUEL_API_CLIENT_ID: ${FUEL_API_CLIENT_ID}
+      FUEL_API_CLIENT_SECRET: ${FUEL_API_CLIENT_SECRET}
+      FUEL_API_AUTH_URL: ${FUEL_API_AUTH_URL}
+      FUEL_API_ACCOUNT_ID: ${FUEL_API_ACCOUNT_ID}
