@@ -47,10 +47,12 @@ exports.handler = async (event) => {
     // batchSend({ queueName: 'clicks-to-process', values: messages }),
   ]);
 
-  log('DONE', {
+  const results = {
     sends: sendIds.size,
     subscribers: subscriberIds.size,
     events: messages.length,
     status: OverallStatus,
-  });
+  };
+  log('DONE', results);
+  return { statusCode: 200, body: JSON.stringify(results) };
 };
