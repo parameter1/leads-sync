@@ -1,9 +1,13 @@
 const soap = require('./soap');
-const createDate = require('./utils/create-date');
 
 const CUSTOMER_KEY = 'Click Log';
 
-module.exports = () => {
+/**
+ *
+ * @param {object} params
+ * @param {Date} params.date
+ */
+module.exports = ({ date }) => {
   const props = ['JobID', 'SubscriberID', 'EventDate', 'LinkContent', 'ID'];
   const Filter = {
     attributes: { 'xsi:type': 'ComplexFilterPart' },
@@ -13,7 +17,7 @@ module.exports = () => {
         attributes: { 'xsi:type': 'SimpleFilterPart' },
         Property: 'EventDate',
         SimpleOperator: 'greaterThan',
-        DateValue: createDate('7/31/2020 11:59:59 PM').toISOString(),
+        DateValue: date.toISOString(),
       },
       LogicalOperator: 'AND',
       RightOperand: {
