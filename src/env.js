@@ -11,11 +11,12 @@ module.exports = cleanEnv(process.env, {
   AWS_REGION: str({ desc: 'The AWS region. This will be provided by the lambda runtime.' }),
   AWS_ACCESS_KEY_ID: str({ desc: 'This will be provided by the lambda runtime.' }),
   AWS_SECRET_ACCESS_KEY: str({ desc: 'This will be provided by the lambda runtime.' }),
+  AWS_EXECUTION_ENV: str({ desc: 'This will be provided by the lambda runtime.' }),
 
   FUEL_API_AUTH_URL: str({ desc: 'The authentication base URI' }),
   FUEL_API_CLIENT_ID: str({ desc: 'The Marketing Cloud API client ID.' }),
   FUEL_API_CLIENT_SECRET: str({ desc: 'The Marketing Cloud API client secret.' }),
   FUEL_API_ACCOUNT_ID: num({ desc: 'Optional account identifier of the target business unit', default: undefined }),
-  MONGO_DB_NAME: str({ desc: 'The MongoDB database to write data to.' }),
-  MONGO_DSN: str({ desc: 'The MongoDB DSN to connect to.' }),
+  // MONGO_DB_NAME: str({ desc: 'The MongoDB database to write data to.' }),
+  // MONGO_DSN: str({ desc: 'The MongoDB DSN to connect to.' }),
 });
