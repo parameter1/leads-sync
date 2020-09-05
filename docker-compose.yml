@@ -1,6 +1,14 @@
 version: '3.7'
 
 x-env-defaults: &env
+  AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+  AWS_ACCOUNT_ID: 598984531759
+  AWS_REGION: us-east-2
+  AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+  FUEL_API_CLIENT_ID: ${FUEL_API_CLIENT_ID}
+  FUEL_API_CLIENT_SECRET: ${FUEL_API_CLIENT_SECRET}
+  FUEL_API_AUTH_URL: ${FUEL_API_AUTH_URL}
+  FUEL_API_ACCOUNT_ID: ${FUEL_API_ACCOUNT_ID}
   NODE_ENV: development
 
 x-node-defaults: &node
@@ -15,18 +23,14 @@ x-node-defaults: &node
   environment:
     <<: *env
 
+x-test-command: &test
+  <<: *node
+  working_dir: /sync/src
+  entrypoint: ["node", "test"]
+  environment:
+    <<: *env
+
 services:
-  test:
-    <<: *node
-    working_dir: /sync/src
-    entrypoint: ["node", "test"]
-    environment:
-      <<: *env
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_ACCOUNT_ID: 598984531759
-      AWS_REGION: us-east-2
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      FUEL_API_CLIENT_ID: ${FUEL_API_CLIENT_ID}
-      FUEL_API_CLIENT_SECRET: ${FUEL_API_CLIENT_SECRET}
-      FUEL_API_AUTH_URL: ${FUEL_API_AUTH_URL}
-      FUEL_API_ACCOUNT_ID: ${FUEL_API_ACCOUNT_ID}
+  queue-events:
+    <<: *test
+    command: ["queue-events"]
