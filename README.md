@@ -33,11 +33,9 @@ Syncs Marketing Cloud events and data models for Leads, using Lambda and SQS
 
 
 ## To dos
-- determine how to handle isNewsletter and rollupMetrics on sends/deployments
-- ensure events will work with current data model
-- update mc models (sends, etc) to support multiple rels
-- update resolvers to support multiple rels
-- disable click redirect URLs
+- [ ] support parentEntity rel on categories
+- [ ] ensure events will work with current data model
+- [x] disable click redirect URLs
 - update HTML link tracking to use new URL format
 - will need to run a process to update events with internal URLs
 - need to determine how to handle URL acknowledgements

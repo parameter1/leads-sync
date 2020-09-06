@@ -10,7 +10,7 @@ module.exports = async ({ ids }) => {
   const Filter = {
     attributes: { 'xsi:type': 'SimpleFilterPart' },
     Property: 'ID',
-    SimpleOperator: 'IN',
+    SimpleOperator: ids.length > 1 ? 'IN' : 'equals',
     Value: ids,
   };
   return soap.retrieve('Send', props, { Filter });
