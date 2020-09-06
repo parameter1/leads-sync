@@ -9,6 +9,7 @@ x-env-defaults: &env
   FUEL_API_CLIENT_SECRET: ${FUEL_API_CLIENT_SECRET}
   FUEL_API_AUTH_URL: ${FUEL_API_AUTH_URL}
   FUEL_API_ACCOUNT_ID: ${FUEL_API_ACCOUNT_ID}
+  MONGO_DSN: mongodb://mongodb:27017
   NODE_ENV: development
 
 x-node-defaults: &node
@@ -29,8 +30,25 @@ x-test-command: &test
   entrypoint: ["node", "test"]
   environment:
     <<: *env
+  depends_on:
+    - mongodb
 
 services:
+  mongodb:
+    tty: true
+    image: mongo:3.4
+    volumes:
+      - mongodb:/data/db
+    ports:
+      - "43987:27017"
+
   queue-events:
     <<: *test
     command: ["queue-events"]
+
+  upsert-subscribers:
+    <<: *test
+    command: ["upsert-subscribers"]
+
+volumes:
+  mongodb: {}

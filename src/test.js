@@ -1,4 +1,5 @@
 const queueEvents = require('./lambda/queue-events');
+const upsertSubscribers = require('./lambda/upsert-subscribers');
 
 const [, , funcName] = process.argv;
 const { log } = console;
@@ -9,6 +10,22 @@ const funcs = {
   'queue-events': {
     func: queueEvents.handler,
     args: [],
+  },
+  'upsert-subscribers': {
+    func: upsertSubscribers.handler,
+    args: [
+      {
+        Records: [
+          { body: '2079997' },
+          { body: '2079997' },
+          { body: '2405238' },
+          { body: '6750413' },
+          { body: '6750413' },
+          { body: '24433210' },
+          { body: '71616056' },
+        ],
+      },
+    ],
   },
 };
 
