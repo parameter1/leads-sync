@@ -105,6 +105,8 @@ const upsert = async ({ sends, ids }) => {
       isTestSend: /^test send/i.test(Subject) || /^\[test\]:/i.test(Subject),
       'metrics.bounces': send.HardBounces || 0 + send.SoftBounces || 0 + send.OtherBounces || 0,
       'externalSource.lastRetrievedAt': now,
+      'externalSource.createdAt': send.CreatedDate,
+      'externalSource.updatedAt': send.ModifiedDate,
       'deployment.namespace': 'FuelSOAP:Email',
       'deployment.identifier': emailId,
       ...(deployment && { rollupMetrics: deployment.rollupMetrics }),
