@@ -10,6 +10,7 @@ x-env-defaults: &env
   FUEL_API_AUTH_URL: ${FUEL_API_AUTH_URL}
   FUEL_API_ACCOUNT_ID: ${FUEL_API_ACCOUNT_ID}
   MONGO_DSN: mongodb://mongodb:27017
+  MONGO_DB_NAME: leads-sync
   NODE_ENV: development
 
 x-node-defaults: &node
@@ -49,6 +50,10 @@ services:
   upsert-subscribers:
     <<: *test
     command: ["upsert-subscribers"]
+
+  upsert-sends:
+    <<: *test
+    command: ["upsert-sends"]
 
 volumes:
   mongodb: {}
