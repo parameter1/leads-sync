@@ -18,7 +18,7 @@ const upsertIdentities = require('./process-events/upsert-identities');
 const { log } = console;
 const db = factory();
 
-exports.handler = async (event = {}, context) => {
+exports.handler = async (event = {}, context = {}) => {
   // see https://docs.atlas.mongodb.com/best-practices-connecting-to-aws-lambda/
   context.callbackWaitsForEmptyEventLoop = false;
 
