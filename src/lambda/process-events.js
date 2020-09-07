@@ -9,8 +9,10 @@ const { log } = console;
 const db = factory();
 
 exports.handler = async (event = {}) => {
-  const ops = event.Records.map((record) => {
-    const { urlId, row } = record.body;
+  const messages = event.Records.map((record) => JSON.parse(record.body));
+
+  const ops = messages.map((message) => {
+    const { urlId, row } = message;
     const date = createDate(row.EventDate);
     const day = moment(date).startOf('day').toDate();
     const send = `${row.JobID}`;
@@ -39,8 +41,8 @@ exports.handler = async (event = {}) => {
   // flag events as processed
   await batchSend({
     queueName: 'clicks-processed',
-    values: event.Records,
-    builder: ({ body }, i) => ({ Id: `${body.row.ID}__${i}`, MessageBody: JSON.stringify(body) }),
+    values: messages,
+    builder: (message, i) => ({ Id: `${message.row.ID}__${i}`, MessageBody: JSON.stringify(message) }),
   });
 
   if (!AWS_EXECUTION_ENV) await db.close();

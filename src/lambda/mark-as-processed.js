@@ -5,7 +5,7 @@ const { log } = console;
 
 exports.handler = async (event = {}) => {
   const body = event.Records.map((record) => {
-    const { row } = record.body;
+    const { row } = JSON.parse(record.body);
     const keys = ['ID', 'JobID', 'SubscriberID', 'EventDate', 'IsUnique', 'ListID'].reduce((o, key) => {
       const value = row[key];
       return { ...o, [key]: value };
