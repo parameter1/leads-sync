@@ -47,17 +47,13 @@ services:
     <<: *test
     command: ["queue-events"]
 
-  upsert-subscribers:
-    <<: *test
-    command: ["upsert-subscribers"]
-
-  upsert-sends:
-    <<: *test
-    command: ["upsert-sends"]
-
   process-events:
     <<: *test
     command: ["process-events"]
+
+  mark-as-processed:
+    <<: *test
+    command: ["mark-as-processed"]
 
   script-event-sends:
     <<: *test

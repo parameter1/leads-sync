@@ -20,6 +20,11 @@ module.exports = async ({ deployments, sends, db }) => {
   const now = new Date();
   const sendIds = [];
 
+  // map deployments by internal deploymentId
+  // will be added to the email send map
+  const deploymentMap = new Map();
+  deployments.forEach((dep) => deploymentMap.set(`${dep._id}`, dep));
+
   const ops = sends.map((send) => {
     const sendId = `${send.ID}`;
     sendIds.push(sendId);
@@ -49,5 +54,22 @@ module.exports = async ({ deployments, sends, db }) => {
   log(`Found ${ops.length} email sends to upsert`);
   const collection = await db.collection({ dbName: MONGO_DB_NAME, name: 'email-sends' });
   if (ops.length) await collection.bulkWrite(ops);
+  const emailSends = await collection.find({
+    'externalSource.namespace': 'FuelSOAP:Send',
+    'externalSource.identifier': { $in: sendIds },
+  }, {
+    projection: {
+      'externalSource.identifier': 1,
+      deploymentId: 1,
+      isTestSend: 1,
+      sentDate: 1,
+    },
+  }).toArray();
   log('Email send processing complete.');
+  return emailSends.reduce((map, send) => {
+    const deployment = deploymentMap.get(`${send.deploymentId}`);
+    if (!deployment) throw new Error(`Unable to load deployment for ID ${send.deploymentId}`);
+    map.set(send.externalSource.identifier, { ...send, deployment });
+    return map;
+  }, new Map());
 };

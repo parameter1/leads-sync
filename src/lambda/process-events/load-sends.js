@@ -2,13 +2,8 @@ const retrieveSends = require('../../marketing-cloud/retrieve-sends');
 
 const { log } = console;
 
-module.exports = async ({ event }) => {
+module.exports = async ({ idSet }) => {
   log('Loading sends from Marketing Cloud...');
-  // create a unique set of send ids from the message bodies
-  const idSet = event.Records.reduce((set, record) => {
-    set.add(record.body);
-    return set;
-  }, new Set());
   const sendIds = [...idSet];
   log({ sendIds });
 

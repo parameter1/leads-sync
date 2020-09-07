@@ -39,7 +39,12 @@ module.exports = async ({ categories, emails, db }) => {
     'externalSource.namespace': 'FuelSOAP:Email',
     'externalSource.identifier': { $in: emailIds },
   }, {
-    projection: { 'externalSource.identifier': 1, isNewsletter: 1, rollupMetrics: 1 },
+    projection: {
+      'externalSource.identifier': 1,
+      isNewsletter: 1,
+      rollupMetrics: 1,
+      categoryId: 1,
+    },
   }).toArray();
   log('Email deployment processing complete.');
   return deployments.reduce((map, dep) => {

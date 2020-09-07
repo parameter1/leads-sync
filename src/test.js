@@ -1,9 +1,8 @@
 const queueEvents = require('./lambda/queue-events');
-const upsertSubscribers = require('./lambda/upsert-subscribers');
-const upsertSends = require('./lambda/upsert-sends');
 const processEvents = require('./lambda/process-events');
+const markAsProcessed = require('./lambda/mark-as-processed');
 
-const sampleEvents = require('../sample-events.json');
+const sampleEvents = require('../sample-events');
 
 const [, , funcName] = process.argv;
 const { log } = console;
@@ -18,44 +17,13 @@ const funcs = {
   'process-events': {
     func: processEvents.handler,
     args: [
-      { Records: sampleEvents.map((event) => ({ body: event })) },
+      { Records: sampleEvents.map((event) => ({ body: event.MessageBody })) },
     ],
   },
-  'upsert-subscribers': {
-    func: upsertSubscribers.handler,
+  'mark-as-processed': {
+    func: markAsProcessed.handler,
     args: [
-      {
-        Records: [
-          { body: '2079997' },
-          { body: '2079997' },
-          { body: '2405238' },
-          { body: '6750413' },
-          { body: '6750413' },
-          { body: '24433210' },
-          { body: '71616056' },
-        ],
-      },
-    ],
-  },
-  'upsert-sends': {
-    func: upsertSends.handler,
-    args: [
-      {
-        Records: [
-          { body: '599224' },
-          { body: '507731' },
-          { body: '606454' },
-          { body: '609009' },
-          { body: '609009' },
-          { body: '601864' },
-          { body: '606440' },
-          { body: '543141' },
-          { body: '594317' },
-          { body: '594317' },
-          { body: '85029' },
-          { body: '611626'},
-        ],
-      },
+      { Records: sampleEvents.map((event) => ({ body: event.MessageBody })) },
     ],
   },
 };
