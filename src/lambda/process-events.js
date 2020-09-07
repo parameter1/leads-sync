@@ -37,7 +37,7 @@ exports.handler = async (event = {}) => {
   }
 
   // flag events as processed
-  batchSend({
+  await batchSend({
     queueName: 'clicks-processed',
     values: event.Records,
     builder: ({ body }, i) => ({ Id: `${body.row.ID}__${i}`, MessageBody: JSON.stringify(body) }),
