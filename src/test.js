@@ -1,6 +1,9 @@
 const queueEvents = require('./lambda/queue-events');
 const upsertSubscribers = require('./lambda/upsert-subscribers');
 const upsertSends = require('./lambda/upsert-sends');
+const processEvents = require('./lambda/process-events');
+
+const sampleEvents = require('../sample-events.json');
 
 const [, , funcName] = process.argv;
 const { log } = console;
@@ -11,6 +14,12 @@ const funcs = {
   'queue-events': {
     func: queueEvents.handler,
     args: [],
+  },
+  'process-events': {
+    func: processEvents.handler,
+    args: [
+      { Records: sampleEvents.map((event) => ({ body: event })) },
+    ],
   },
   'upsert-subscribers': {
     func: upsertSubscribers.handler,

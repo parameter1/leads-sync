@@ -55,5 +55,9 @@ services:
     <<: *test
     command: ["upsert-sends"]
 
+  process-events:
+    <<: *test
+    command: ["process-events"]
+
 volumes:
   mongodb: {}
