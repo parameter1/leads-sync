@@ -7,7 +7,7 @@ const createDate = require('../marketing-cloud/utils/create-date');
 const { log } = console;
 
 exports.handler = async (event = {}) => {
-  const date = createDate('9/6/2020 7:59:59 PM');
+  const date = createDate('9/6/2020 11:35:00 AM');
   log({ date: date.toISOString() });
   const response = await getRows({ date });
 
