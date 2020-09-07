@@ -36,6 +36,7 @@ Syncs Marketing Cloud events and data models for Leads, using Lambda and SQS
 - [ ] support parentEntity rel on categories
 - [ ] ensure events will work with current data model
 - [x] disable click redirect URLs
+- [ ] determine how to handle url acknowledgements
 - update HTML link tracking to use new URL format
 - will need to run a process to update events with internal URLs
 - need to determine how to handle URL acknowledgements
