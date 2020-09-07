@@ -40,6 +40,8 @@ Syncs Marketing Cloud events and data models for Leads, using Lambda and SQS
 - [ ] add day, send, url, sub unique index (with filter on sub + send) on email-click-events
 - [ ] add send and sub values to all previous clicks
 - [ ] update email-click-events unique index to use partial filter exp on job, usr
+- [ ] update category upsert to use parentId?
+- [ ] ad request id pagination support to queue events
 - update HTML link tracking to use new URL format
 - will need to run a process to update events with internal URLs
 - need to determine how to handle URL acknowledgements
