@@ -13,6 +13,9 @@ module.exports = cleanEnv(process.env, {
   AWS_SECRET_ACCESS_KEY: str({ desc: 'This will be provided by the lambda runtime.' }),
   AWS_EXECUTION_ENV: str({ desc: 'This will be provided by the lambda runtime.', default: undefined }),
 
+  CLICK_LOG_CUSTOMER_KEY: str({ desc: 'The click log data extension customer key.' }),
+  CLICK_LOG_OBJECT_ID: str({ desc: 'The click log data extension object id.' }),
+
   FUEL_API_AUTH_URL: str({ desc: 'The authentication base URI' }),
   FUEL_API_CLIENT_ID: str({ desc: 'The Marketing Cloud API client ID.' }),
   FUEL_API_CLIENT_SECRET: str({ desc: 'The Marketing Cloud API client secret.' }),

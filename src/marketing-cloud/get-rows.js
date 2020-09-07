@@ -1,6 +1,5 @@
 const soap = require('./soap');
-
-const CUSTOMER_KEY = 'Click Log';
+const { CLICK_LOG_CUSTOMER_KEY } = require('../env');
 
 /**
  *
@@ -45,5 +44,5 @@ module.exports = ({ date }) => {
       },
     },
   };
-  return soap.retrieve(`DataExtensionObject[${CUSTOMER_KEY}]`, props, { Filter });
+  return soap.retrieve(`DataExtensionObject[${CLICK_LOG_CUSTOMER_KEY}]`, props, { Filter });
 };
