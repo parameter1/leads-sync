@@ -28,13 +28,7 @@ exports.handler = async (event = {}) => {
     if (SubscriberID) data.subscriberIds.add(SubscriberID);
     data.messages.push({
       Id: row.ID,
-      MessageBody: JSON.stringify({
-        id: row.ID,
-        urlId,
-        sendId: row.JobID,
-        subscriberId: row.SubscriberID,
-        date: row.EventDate, // @todo convert this here??
-      }),
+      MessageBody: JSON.stringify({ urlId, row }),
     });
     return data;
   }, { sendIds: new Set(), subscriberIds: new Set(), messages: [] });
@@ -44,7 +38,7 @@ exports.handler = async (event = {}) => {
   await Promise.all([
     batchSend({ queueName: 'upsert-sends', values: [...sendIds], builder: idBuilder }),
     batchSend({ queueName: 'upsert-subscribers', values: [...subscriberIds], builder: idBuilder }),
-    // batchSend({ queueName: 'clicks-to-process', values: messages }),
+    batchSend({ queueName: 'clicks-to-process', values: messages }),
   ]);
 
   const results = {
