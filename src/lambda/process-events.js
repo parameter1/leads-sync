@@ -12,15 +12,15 @@ exports.handler = async (event = {}) => {
     const { urlId, row } = record.body;
     const date = createDate(row.EventDate);
     const day = moment(date).startOf('day').toDate();
-    const job = `${row.JobID}`;
-    const usr = `${row.SubscriberID}`;
+    const send = `${row.JobID}`;
+    const sub = `${row.SubscriberID}`;
     const url = ObjectId(urlId);
 
     const filter = {
       day,
-      job,
+      send,
       url,
-      usr,
+      sub,
     };
     const $setOnInsert = { ...filter, n: 0, __v: 0 };
     const $addToSet = { guids: row.ID };
