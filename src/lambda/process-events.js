@@ -3,6 +3,7 @@ const { ObjectId } = require('@parameter1/mongodb');
 const factory = require('../mongodb/factory');
 const createDate = require('../marketing-cloud/utils/create-date');
 const { AWS_EXECUTION_ENV, MONGO_DB_NAME } = require('../env');
+const batchSend = require('../utils/sqs-batch-send');
 
 const { log } = console;
 const db = factory();
@@ -34,5 +35,13 @@ exports.handler = async (event = {}) => {
     const r = await collection.bulkWrite(ops);
     log(r);
   }
+
+  // flag events as processed
+  batchSend({
+    queueName: 'clicks-processed',
+    values: event.Records,
+    builder: ({ body }, i) => ({ Id: `${body.row.ID}__${i}`, MessageBody: JSON.stringify(body) }),
+  });
+
   if (!AWS_EXECUTION_ENV) await db.close();
 };
