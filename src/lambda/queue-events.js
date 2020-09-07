@@ -18,6 +18,8 @@ exports.handler = async (event = {}) => {
   // @todo handle paging
   const { Results, OverallStatus } = response;
 
+  const forceMarkMessages = [];
+
   const messages = Results.map((row) => {
     const { Properties } = row;
     return Properties.Property.reduce((o, { Name: k, Value: v }) => ({ ...o, [k]: v }), {});
@@ -25,14 +27,22 @@ exports.handler = async (event = {}) => {
     const { LinkContent } = row;
     const urlId = extractUrlId(LinkContent);
     const ack = extractAck(LinkContent);
+    const message = { Id: row.ID, MessageBody: JSON.stringify({ urlId, ack, row }) };
     // NOTE: all links must have a `urlId` and an `ack` value.
-    if (!urlId || !ack) return arr;
-    arr.push({
-      Id: row.ID,
-      MessageBody: JSON.stringify({ urlId, ack, row }),
-    });
+    if (!urlId || !ack) {
+      // if not, force mark them as processed.
+      forceMarkMessages.push(message);
+      return arr;
+    }
+    // console.log(row);
+    arr.push(message);
     return arr;
   }, []);
+
+  log(`Found ${forceMarkMessages.length} ineligible links. Queuing these as processed.`)
+  if (forceMarkMessages.length) {
+    await batchSend({ queueName: 'clicks-processed', values: forceMarkMessages });
+  }
 
   // @todo add BU attributes??
   // push events to the processing queue.
