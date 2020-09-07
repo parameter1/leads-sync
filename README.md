@@ -18,15 +18,16 @@ Syncs Marketing Cloud events and data models for Leads, using Lambda and SQS
   - update data extension rows to mark the events as processed
 
 ## To dos
+- [ ] handle final event sync from last event date
 - [ ] support parentEntity rel on categories
 - [x] add click log external key and object id env vars
 - [x] ensure events will work with current data model
 - [x] disable click redirect URLs
-- [ ] fix email click data (remove sub+send) and change index back
+- [x] fix email click data (remove sub+send) and change index back
 - [x] determine how to handle url acknowledgements
 - [x] determine how to handle EmailSendUrl models
 - [ ] add `lt.ack` to new link tracking
-- [ ] combine `n` with `$size: guids` in report processing
+- [x] combine `n` with `$size: guids` in report processing
 - [x] add day, send, url, sub unique index (with filter on sub + send) on email-click-events
 - [x] add send and sub values to all previous clicks
 - [x] update email-click-events unique index to use partial filter exp on job, usr
