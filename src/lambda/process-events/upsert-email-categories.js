@@ -24,6 +24,8 @@ module.exports = async ({ emails, db }) => {
   log({ categoryN: categoryTrees.length, idN: categoryIds.length });
   if (categoryTrees.length !== categoryIds.length) throw new Error('Category length mismatch.');
 
+  const parentFolderIdSet = new Set();
+
   // create unique map of category ops
   const opsMap = categoryTrees.reduce((map, { tree }) => {
     const now = new Date();
@@ -34,6 +36,7 @@ module.exports = async ({ emails, db }) => {
       };
       const parents = tree.slice(i).reverse();
       const parentFolderId = get(cat, 'ParentFolder.ID');
+      if (parentFolderId) parentFolderIdSet.add(`${parentFolderId}`);
       const $setOnInsert = {
         ...filter,
         rollupMetrics: false,
@@ -47,7 +50,6 @@ module.exports = async ({ emails, db }) => {
         'externalSource.lastRetrievedAt': now,
         hasDeployments: i === 0,
         updatedAt: now,
-        ...(parentFolderId && { 'parent.namespace': 'FuelSOAP:DataFolder' }),
         ...(parentFolderId && { 'parent.identifier': `${parentFolderId}` }),
       };
       map.set(`${cat.ID}`, { filter, update: { $setOnInsert, $set }, upsert: true });
@@ -63,6 +65,20 @@ module.exports = async ({ emails, db }) => {
   log(`Found ${ops.length} categories to upsert (with parents)`);
   const collection = await db.collection({ dbName: MONGO_DB_NAME, name: 'email-categories' });
   if (ops.length) await collection.bulkWrite(ops);
+
+  // set parent ids
+  const parents = await collection.find({
+    'externalSource.namespace': 'FuelSOAP:DataFolder',
+    'externalSource.identifier': { $in: [...parentFolderIdSet] },
+  }, { projection: { _id: 1, externalSource: 1 } }).toArray();
+  const parentOps = parents.map((parent) => {
+    const filter = { 'parent.identifier': parent.externalSource.identifier };
+    const $set = { parentId: parent._id };
+    const $unset = { parent: 1 };
+    return { updateMany: { filter, update: { $set, $unset } } };
+  });
+  if (parentOps.length) await collection.bulkWrite(parentOps);
+
   const categories = await collection.find({
     'externalSource.namespace': 'FuelSOAP:DataFolder',
     'externalSource.identifier': { $in: categoryIds },

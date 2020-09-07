@@ -19,9 +19,8 @@ Syncs Marketing Cloud events and data models for Leads, using Lambda and SQS
 
 ## To dos
 - [ ] add queue trigger on time interval
-- [ ] deploy leads graph and leads manage
+- [x] deploy leads graph and leads manage
 - [x] handle final event sync from last event date
-- [ ] support parentEntity rel on categories
 - [ ] send test email using new format, and process clicks
 - [x] add click log external key and object id env vars
 - [x] ensure events will work with current data model
@@ -34,9 +33,9 @@ Syncs Marketing Cloud events and data models for Leads, using Lambda and SQS
 - [x] add day, send, url, sub unique index (with filter on sub + send) on email-click-events
 - [x] add send and sub values to all previous clicks
 - [x] update email-click-events unique index to use partial filter exp on job, usr
-- [ ] update category upsert to use parentId?
+- [x] update category upsert to use parentId
 - [ ] ad request id pagination support to queue events
-- [ ] update HTML link tracking to use new URL format
+- [x] update HTML link tracking to use new URL format
 - [ ] need to determine how to handle multiple BUs
 
 ## Event Modeling
