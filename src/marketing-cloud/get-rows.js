@@ -8,7 +8,7 @@ const CUSTOMER_KEY = 'Click Log';
  * @param {Date} params.date
  */
 module.exports = ({ date }) => {
-  const props = ['JobID', 'SubscriberID', 'EventDate', 'LinkContent', 'ID'];
+  const props = ['JobID', 'SubscriberID', 'EventDate', 'LinkContent', 'ID', 'IsUnique', 'ListID'];
   const Filter = {
     attributes: { 'xsi:type': 'ComplexFilterPart' },
     LeftOperand: {
