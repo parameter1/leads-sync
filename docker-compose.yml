@@ -9,8 +9,8 @@ x-env-defaults: &env
   FUEL_API_CLIENT_SECRET: ${FUEL_API_CLIENT_SECRET}
   FUEL_API_AUTH_URL: ${FUEL_API_AUTH_URL}
   FUEL_API_ACCOUNT_ID: ${FUEL_API_ACCOUNT_ID}
-  MONGO_DSN: mongodb://mongodb:27017
-  MONGO_DB_NAME: leads-sync
+  MONGO_DSN: ${MONGO_DSN-mongodb://mongodb:27017}
+  MONGO_DB_NAME: ${MONGO_DB_NAME-leads-sync}
   NODE_ENV: development
 
 x-node-defaults: &node
@@ -58,6 +58,16 @@ services:
   process-events:
     <<: *test
     command: ["process-events"]
+
+  script-event-sends:
+    <<: *test
+    working_dir: /sync/src/scripts
+    entrypoint: ["node", "event-sends"]
+
+  script-event-subs:
+    <<: *test
+    working_dir: /sync/src/scripts
+    entrypoint: ["node", "event-subs"]
 
 volumes:
   mongodb: {}
