@@ -57,15 +57,5 @@ services:
     <<: *test
     command: ["mark-as-processed"]
 
-  script-event-sends:
-    <<: *test
-    working_dir: /sync/src/scripts
-    entrypoint: ["node", "event-sends"]
-
-  script-event-subs:
-    <<: *test
-    working_dir: /sync/src/scripts
-    entrypoint: ["node", "event-subs"]
-
 volumes:
   mongodb: {}
