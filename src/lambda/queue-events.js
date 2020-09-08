@@ -5,6 +5,7 @@ const getRows = require('../marketing-cloud/get-rows');
 const batchSend = require('../utils/sqs-batch-send');
 const createDate = require('../marketing-cloud/utils/create-date');
 const { AWS_EXECUTION_ENV, MONGO_DB_NAME } = require('../env');
+const lambda = require('../lambda');
 
 const { log } = console;
 const db = factory();
@@ -15,14 +16,29 @@ exports.handler = async (event = {}, context = {}) => {
 
   const date = createDate('9/6/2020 11:35:00 AM');
   log({ date: date.toISOString() });
-  const response = await getRows({ date });
 
-  const { queryStringParameters = {} } = event;
-  const { requestId } = queryStringParameters;
+  const { requestId } = event;
   log({ requestId });
 
-  // @todo handle paging
-  const { Results, OverallStatus } = response;
+  const response = await getRows({ date, requestId });
+
+  const { Results, OverallStatus, RequestID } = response;
+
+  if (OverallStatus === 'MoreDataAvailable') {
+    // invoke the function again.
+    log(`Invoking queue-events function for ${RequestID}`);
+    await lambda.invoke({
+      FunctionName: 'leads-queue-events',
+      InvocationType: 'Event',
+      Payload: JSON.stringify({ requestId: RequestID }),
+    }).promise();
+    log('Invoke complete.');
+  }
+
+  if (!Results.length) {
+    // nothing to process
+    return { statusCode: 200, body: JSON.stringify({ events: 0, status: OverallStatus }) };
+  }
 
   const guids = [];
   const rows = Results.map((row) => {
@@ -33,8 +49,10 @@ exports.handler = async (event = {}, context = {}) => {
   });
 
   // @todo this is a workaround. fix issues with updating click log rows
-  const collection = await db.collection({ dbName: MONGO_DB_NAME, name: 'processed-events' })
-  const processed = await collection.find({ guid: { $in: guids } }, { projection: { guid: 1 } }).toArray();
+  const collection = await db.collection({ dbName: MONGO_DB_NAME, name: 'processed-events' });
+  const processed = await collection.find({
+    guid: { $in: guids },
+  }, { projection: { guid: 1 } }).toArray();
   const processedMap = processed.reduce((map, p) => {
     map.set(p.guid, true);
     return map;
@@ -59,7 +77,7 @@ exports.handler = async (event = {}, context = {}) => {
     return arr;
   }, []);
 
-  log(`Found ${forceMarkMessages.length} ineligible links. Queuing these as processed.`)
+  log(`Found ${forceMarkMessages.length} ineligible links. Queuing these as processed.`);
   if (forceMarkMessages.length) {
     await batchSend({ queueName: 'clicks-processed', values: forceMarkMessages });
   }

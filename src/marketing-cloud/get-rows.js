@@ -1,12 +1,19 @@
 const soap = require('./soap');
 const { CLICK_LOG_CUSTOMER_KEY } = require('../env');
 
+const { log } = console;
+
 /**
  *
  * @param {object} params
  * @param {Date} params.date
  */
-module.exports = ({ date }) => {
+module.exports = ({ date, requestId }) => {
+  if (requestId) {
+    log(`Continuing request ${requestId}...`);
+    return soap.continueRetrieve(requestId);
+  }
+
   const props = ['JobID', 'SubscriberID', 'EventDate', 'LinkContent', 'ID', 'IsUnique', 'ListID'];
   const Filter = {
     attributes: { 'xsi:type': 'ComplexFilterPart' },
