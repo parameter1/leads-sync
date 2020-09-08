@@ -1,12 +1,18 @@
+const factory = require('../mongodb/factory');
 const extractUrlId = require('../utils/extract-url-id');
 const extractAck = require('../utils/extract-ack');
 const getRows = require('../marketing-cloud/get-rows');
 const batchSend = require('../utils/sqs-batch-send');
 const createDate = require('../marketing-cloud/utils/create-date');
+const { AWS_EXECUTION_ENV, MONGO_DB_NAME } = require('../env');
 
 const { log } = console;
+const db = factory();
 
-exports.handler = async (event = {}) => {
+exports.handler = async (event = {}, context = {}) => {
+  // see https://docs.atlas.mongodb.com/best-practices-connecting-to-aws-lambda/
+  context.callbackWaitsForEmptyEventLoop = false;
+
   const date = createDate('9/6/2020 11:35:00 AM');
   log({ date: date.toISOString() });
   const response = await getRows({ date });
@@ -18,16 +24,30 @@ exports.handler = async (event = {}) => {
   // @todo handle paging
   const { Results, OverallStatus } = response;
 
-  const forceMarkMessages = [];
-
-  const messages = Results.map((row) => {
+  const guids = [];
+  const rows = Results.map((row) => {
     const { Properties } = row;
-    return Properties.Property.reduce((o, { Name: k, Value: v }) => ({ ...o, [k]: v }), {});
-  }).reduce((arr, row) => {
-    const { LinkContent } = row;
+    const r = Properties.Property.reduce((o, { Name: k, Value: v }) => ({ ...o, [k]: v }), {});
+    guids.push(r.ID);
+    return r;
+  });
+
+  // @todo this is a workaround. fix issues with updating click log rows
+  const collection = await db.collection({ dbName: MONGO_DB_NAME, name: 'processed-events' })
+  const processed = await collection.find({ guid: { $in: guids } }, { projection: { guid: 1 } }).toArray();
+  const processedMap = processed.reduce((map, p) => {
+    map.set(p.guid, true);
+    return map;
+  }, new Map());
+
+  const forceMarkMessages = [];
+  const messages = rows.reduce((arr, row) => {
+    const { LinkContent, ID } = row;
+    // skip if already marked as processed in the db (@todo this is a workaround)
+    if (processedMap.get(ID)) return arr;
     const urlId = extractUrlId(LinkContent);
     const ack = extractAck(LinkContent);
-    const message = { Id: row.ID, MessageBody: JSON.stringify({ urlId, ack, row }) };
+    const message = { Id: ID, MessageBody: JSON.stringify({ urlId, ack, row }) };
     // NOTE: all links must have a `urlId` and an `ack` value.
     if (!urlId || !ack) {
       // if not, force mark them as processed.
@@ -53,5 +73,6 @@ exports.handler = async (event = {}) => {
     status: OverallStatus,
   };
   log('DONE', results);
+  if (!AWS_EXECUTION_ENV) await db.close();
   return { statusCode: 200, body: JSON.stringify(results) };
 };

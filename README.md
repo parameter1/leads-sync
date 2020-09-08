@@ -37,6 +37,11 @@ Syncs Marketing Cloud events and data models for Leads, using Lambda and SQS
 - [ ] ad request id pagination support to queue events
 - [x] update HTML link tracking to use new URL format
 - [ ] need to determine how to handle multiple BUs
+- [x] links that do not qualify (missing ack and urlId) will get stuck - need to mark as processed
+- [ ] need to contact erik to fix primary key of data exteionsion due to
+update errors
+- [x] for now mark bad processed updates in mongo and exclude later
+- [x] the sql query for the click log does not account for all email types!!! based on name
 
 ## Event Modeling
 ```js
