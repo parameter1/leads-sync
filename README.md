@@ -18,10 +18,10 @@ Syncs Marketing Cloud events and data models for Leads, using Lambda and SQS
   - update data extension rows to mark the events as processed
 
 ## To dos
-- [ ] add queue trigger on time interval
+- [x] add queue trigger on time interval
 - [x] deploy leads graph and leads manage
 - [x] handle final event sync from last event date
-- [ ] send test email using new format, and process clicks
+- [x] send test email using new format, and process clicks
 - [x] add click log external key and object id env vars
 - [x] ensure events will work with current data model
 - [x] disable click redirect URLs
@@ -34,7 +34,7 @@ Syncs Marketing Cloud events and data models for Leads, using Lambda and SQS
 - [x] add send and sub values to all previous clicks
 - [x] update email-click-events unique index to use partial filter exp on job, usr
 - [x] update category upsert to use parentId
-- [ ] ad request id pagination support to queue events
+- [x] ad request id pagination support to queue events
 - [x] update HTML link tracking to use new URL format
 - [ ] need to determine how to handle multiple BUs
 - [x] links that do not qualify (missing ack and urlId) will get stuck - need to mark as processed
