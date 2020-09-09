@@ -11,6 +11,9 @@ module.exports = async ({ ids }) => {
       values: ids,
     },
     fields: ['name', 'views', 'category', 'createdDate', 'modifiedDate'],
+    page: {
+      pageSize: ids.length,
+    },
   };
   const { items } = await rest.request({ endpoint: '/asset/v1/content/assets/query', method: 'POST', body });
   const { emails, found } = items.reduce((agg, item) => {
