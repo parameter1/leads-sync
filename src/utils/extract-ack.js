@@ -1,5 +1,5 @@
-const pattern1 = /ack=([a-zA-Z0-9]+)/;
-const pattern2 = /lt\.ack=([a-zA-Z0-9]+)/;
+const pattern1 = /ack=([a-zA-Z0-9-_]+)/;
+const pattern2 = /lt\.ack=([a-zA-Z0-9-_]+)/;
 
 /**
  * Extracts the URL acknowledgement short code from a marketing cloud link.
