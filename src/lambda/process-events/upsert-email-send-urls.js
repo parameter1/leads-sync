@@ -9,11 +9,7 @@ module.exports = async ({ emailSends, ackMap: ackJobMap, db }) => {
   ackJobMap.forEach((jobId, ack) => shortIds.push(ack));
 
   const ackColl = await db.collection({ dbName: MONGO_DB_NAME, name: 'url-acknowledgments' });
-  // load acks, but only where not processed
-  const acks = await ackColl.find({
-    shortId: { $in: shortIds },
-    processed: { $ne: true },
-  }).toArray();
+  const acks = await ackColl.find({ shortId: { $in: shortIds } }).toArray();
 
   const now = new Date();
   const ops = acks.reduce((arr, ack) => {
@@ -44,10 +40,12 @@ module.exports = async ({ emailSends, ackMap: ackJobMap, db }) => {
   if (ops.length) await collection.bulkWrite(ops);
 
   // flag acks as processed
-  const shortIdsToUpdate = acks.map((ack) => ack.shortId);
-  if (shortIdsToUpdate.length) {
-    log(`Flagging ${shortIdsToUpdate.length} acks as processed.`);
-    await ackColl.updateMany({ shortId: { $in: shortIdsToUpdate } }, { $set: { processed: true } });
-  }
+  // const shortIdsToUpdate = acks.map((ack) => ack.shortId);
+  // if (shortIdsToUpdate.length) {
+  //   log(`Flagging ${shortIdsToUpdate.length} acks as processed.`);
+  //   await ackColl.updateMany({
+  //     shortId: { $in: shortIdsToUpdate },
+  //   }, { $set: { processed: true } });
+  // }
   log('Email send url processing complete.');
 };
