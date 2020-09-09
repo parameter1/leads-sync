@@ -18,20 +18,21 @@ module.exports = async ({ emailSends, ackMap: ackJobMap, db }) => {
     if (!jobId) throw new Error(`Unable to get jobId for ack ${shortId}`);
     const emailSend = emailSends.get(jobId);
     if (!emailSend) throw new Error(`Unable to get an email send for ${jobId}`);
+    if (!emailSend.sentDate) throw new Error(`No sent date set on email send ${emailSend._id}`);
 
     ack.urlIds.forEach((urlId) => {
       const filter = { sendId: emailSend._id, urlId };
+      const $set = { sentDate: emailSend.sentDate };
       const $setOnInsert = {
         ...filter,
         deploymentId: emailSend.deploymentId,
         // @todo category could technically change... move to $set?
         categoryId: emailSend.deployment.categoryId,
         createdAt: now,
-        sentDate: emailSend.sentDate,
         isTestSend: emailSend.isTestSend,
         __v: 0,
       };
-      arr.push({ updateOne: { filter, update: { $setOnInsert }, upsert: true } });
+      arr.push({ updateOne: { filter, update: { $setOnInsert, $set }, upsert: true } });
     });
     return arr;
   }, []);
