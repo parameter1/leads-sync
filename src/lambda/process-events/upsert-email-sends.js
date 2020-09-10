@@ -37,8 +37,9 @@ module.exports = async ({ deployments, sends, db }) => {
       'externalSource.identifier': sendId,
     };
     const $setOnInsert = { ...filter, createdAt: now, __v: 0 };
+    const attrs = mapSendData(send);
     const $set = {
-      ...mapSendData(send),
+      ...attrs,
       isTestSend: /^test send/i.test(send.Subject) || /^\[test\]:/i.test(send.Subject),
       'metrics.bounces': send.HardBounces || 0 + send.SoftBounces || 0 + send.OtherBounces || 0,
       'externalSource.lastRetrievedAt': now,
@@ -47,6 +48,7 @@ module.exports = async ({ deployments, sends, db }) => {
       deploymentId: deployment._id,
       rollupMetrics: deployment.rollupMetrics,
       isNewsletter: deployment.isNewsletter,
+      ...(attrs.status === 'Sending', { sentDate: new Date() }),
     };
     return { updateOne: { filter, update: { $setOnInsert, $set }, upsert: true } };
   });
@@ -63,6 +65,7 @@ module.exports = async ({ deployments, sends, db }) => {
       deploymentId: 1,
       isTestSend: 1,
       sentDate: 1,
+      status: 1,
     },
   }).toArray();
   log('Email send processing complete.');
