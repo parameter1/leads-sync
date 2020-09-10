@@ -15,8 +15,6 @@ exports.handler = async (event = {}, context = {}) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
   const date = createDate('9/6/2020 11:35:00 AM');
-  log({ date: date.toISOString() });
-
   const { requestId } = event;
   log({ requestId });
 
@@ -37,7 +35,9 @@ exports.handler = async (event = {}, context = {}) => {
 
   if (!Results.length) {
     // nothing to process
-    return { statusCode: 200, body: JSON.stringify({ events: 0, status: OverallStatus }) };
+    log('No events available to process.');
+    log('DONE');
+    return { statusCode: 200 };
   }
 
   const guids = [];
@@ -77,14 +77,17 @@ exports.handler = async (event = {}, context = {}) => {
     return arr;
   }, []);
 
-  log(`Found ${forceMarkMessages.length} ineligible links. Queuing these as processed.`);
   if (forceMarkMessages.length) {
+    log(`Sending ${forceMarkMessages.length} ineligible links to the 'clicks-processed' queue...`);
     await batchSend({ queueName: 'clicks-processed', values: forceMarkMessages });
+    log('Send complete.');
   }
 
   // @todo add BU attributes??
   // push events to the processing queue.
+  log(`Sending ${messages.length} events to the 'clicks-to-process' queue...`);
   await batchSend({ queueName: 'clicks-to-process', values: messages });
+  log('Send complete.');
 
   const results = {
     events: messages.length,

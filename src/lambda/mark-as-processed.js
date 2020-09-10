@@ -19,17 +19,17 @@ exports.handler = async (event = {}, context = {}) => {
   const body = [{ keys, values: { Processed: true } }];
 
   try {
-    const updated = await rest.request({ endpoint: `/hub/v1/dataevents/${CLICK_LOG_OBJECT_ID}/rowset`, method: 'POST', body });
-    log(updated);
-    log('DONE!');
+    await rest.request({ endpoint: `/hub/v1/dataevents/${CLICK_LOG_OBJECT_ID}/rowset`, method: 'POST', body });
+    log('DONE');
   } catch (e) {
     // @todo this is a workaround. fix issues with updating click log rows
     if (/code: 10006/i.test(e.message)) {
-      log('Manually flagging event as processed.');
+      log('Manually flagging event as processed...');
       const collection = await db.collection({ dbName: MONGO_DB_NAME, name: 'processed-events' });
       const filter = { guid: row.ID };
       const update = { $setOnInsert: { ...filter, date: new Date() } };
       await collection.updateOne(filter, update, { upsert: true });
+      log('DONE');
       if (!AWS_EXECUTION_ENV) await db.close();
     } else {
       throw e;

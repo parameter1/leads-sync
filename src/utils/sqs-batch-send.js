@@ -2,8 +2,6 @@ const chunkArray = require('./chunk-array');
 const queueUrl = require('./queue-url');
 const sqs = require('../sqs');
 
-const { log } = console;
-
 /**
  *
  * @param {object} params
@@ -28,7 +26,6 @@ module.exports = async ({
         Entries: entries,
       };
       return sqs.sendMessageBatch(params).promise().then((res) => {
-        log(`Sent ${entries.length} messages to the ${queueName} queue.`);
         const { Failed } = res;
         if (Failed.length) {
           const err = new Error(`Encountered failed '${queueName}' messages.`);

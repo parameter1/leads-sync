@@ -92,11 +92,14 @@ exports.handler = async (event = {}, context = {}) => {
   }
 
   // flag events as processed
+  log(`Sending ${messages.length} events to the 'clicks-processed' queue...`);
   await batchSend({
     queueName: 'clicks-processed',
     values: messages,
     builder: (message, i) => ({ Id: `${message.row.ID}__${i}`, MessageBody: JSON.stringify(message) }),
   });
+  log('Send complete.');
 
+  log('DONE');
   if (!AWS_EXECUTION_ENV) await db.close();
 };
