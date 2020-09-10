@@ -27,6 +27,13 @@ x-node-defaults: &node
   environment:
     <<: *env
 
+x-replay-command: &replay
+  <<: *node
+  working_dir: /sync
+  entrypoint: ["./node_modules/.bin/replay-aws-dlq"]
+  environment:
+    <<: *env
+
 x-test-command: &test
   <<: *node
   working_dir: /sync/src
@@ -44,6 +51,10 @@ services:
       - mongodb:/data/db
     ports:
       - "43987:27017"
+
+  replay-to-process:
+    <<: *replay
+    command: ["https://sqs.us-east-2.amazonaws.com/598984531759/indm-leads-mc-clicks-to-process-dlq", "https://sqs.us-east-2.amazonaws.com/598984531759/indm-leads-mc-clicks-to-process"]
 
   queue-events:
     <<: *test
