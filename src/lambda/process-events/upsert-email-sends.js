@@ -48,7 +48,7 @@ module.exports = async ({ deployments, sends, db }) => {
       deploymentId: deployment._id,
       rollupMetrics: deployment.rollupMetrics,
       isNewsletter: deployment.isNewsletter,
-      ...(attrs.status === 'Sending', { sentDate: new Date() }),
+      ...(attrs.status === 'Sending' && { sentDate: new Date() }),
     };
     return { updateOne: { filter, update: { $setOnInsert, $set }, upsert: true } };
   });
