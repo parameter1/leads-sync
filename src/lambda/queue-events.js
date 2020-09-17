@@ -67,6 +67,9 @@ exports.handler = async (event = {}, context = {}) => {
   const forceMarkMessages = [];
   const messages = rows.reduce((arr, row) => {
     const { LinkContent, ID, JobID } = row;
+    if (row.IsBot_v3 === 'True') throw new Error(`Bot record found!!! ${JSON.stringify(row)}`);
+    if (row.Ready !== 'True') throw new Error(`Improper ready value found. ${JSON.stringify(row)}`);
+    if (row.IsBot_v3 !== 'False') throw new Error(`Improper is bot value found. ${JSON.stringify(row)}`);
     // skip if already marked as processed in the db (@todo this is a workaround)
     if (processedMap.get(ID)) return arr;
     const urlId = extractUrlId(LinkContent);

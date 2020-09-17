@@ -14,7 +14,7 @@ module.exports = ({ date, requestId }) => {
     return soap.continueRetrieve(requestId);
   }
 
-  const props = ['JobID', 'SubscriberID', 'EventDate', 'LinkContent', 'ID', 'IsUnique', 'ListID'];
+  const props = ['JobID', 'SubscriberID', 'EventDate', 'LinkContent', 'ID', 'IsUnique', 'ListID', 'IsBot_v3', 'Ready'];
   const Filter = {
     attributes: { 'xsi:type': 'ComplexFilterPart' },
     LeftOperand: {
