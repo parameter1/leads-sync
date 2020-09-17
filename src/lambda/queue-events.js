@@ -11,7 +11,8 @@ const { log } = console;
 const db = factory();
 
 const jobsToSkip = {
-  289294: true,
+  289294: true, // old job where email was deleted
+  603177: true, // promo job sent from DDT @todo determine how to handle both BUs
 };
 
 exports.handler = async (event = {}, context = {}) => {
