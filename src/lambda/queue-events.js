@@ -10,11 +10,16 @@ const lambda = require('../lambda');
 const { log } = console;
 const db = factory();
 
+const jobsToSkip = {
+  289294: true,
+};
+
 exports.handler = async (event = {}, context = {}) => {
   // see https://docs.atlas.mongodb.com/best-practices-connecting-to-aws-lambda/
   context.callbackWaitsForEmptyEventLoop = false;
 
   const date = createDate('9/6/2020 11:35:00 AM');
+  // @todo this date should be relative to the execution date.
   const { requestId } = event;
   log({ requestId });
 
@@ -60,14 +65,15 @@ exports.handler = async (event = {}, context = {}) => {
 
   const forceMarkMessages = [];
   const messages = rows.reduce((arr, row) => {
-    const { LinkContent, ID } = row;
+    const { LinkContent, ID, JobID } = row;
     // skip if already marked as processed in the db (@todo this is a workaround)
     if (processedMap.get(ID)) return arr;
     const urlId = extractUrlId(LinkContent);
     const ack = extractAck(LinkContent);
     const message = { Id: ID, MessageBody: JSON.stringify({ urlId, ack, row }) };
     // NOTE: all links must have a `urlId` and an `ack` value.
-    if (!urlId || !ack) {
+    // and cannot be in the Skip Jobs map.
+    if (!urlId || !ack || jobsToSkip[JobID]) {
       // if not, force mark them as processed.
       forceMarkMessages.push(message);
       return arr;
