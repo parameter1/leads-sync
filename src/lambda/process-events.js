@@ -3,7 +3,6 @@ const { ObjectId } = require('@parameter1/mongodb');
 const factory = require('../mongodb/factory');
 const createDate = require('../marketing-cloud/utils/create-date');
 const { AWS_EXECUTION_ENV, MONGO_DB_NAME } = require('../env');
-const batchSend = require('../utils/sqs-batch-send');
 
 const loadEmails = require('./process-events/load-emails');
 const loadSends = require('./process-events/load-sends');
@@ -79,27 +78,25 @@ exports.handler = async (event = {}, context = {}) => {
       usr,
     };
     const $setOnInsert = { ...filter, n: 0, __v: 0 };
-    const $addToSet = { guids: row.ID };
     const $max = { last: date };
-    const update = { $setOnInsert, $addToSet, $max };
+    const update = { $setOnInsert, $max };
+
+    // if isbot, do a pull on guids and addtoset on bots
+    // if not is bot, do a pull on bots and addtoset on guids
+    const isBot = row.IsBot_v3 === 'True';
+    const { ID } = row;
+    if (isBot) {
+      update.$addToSet = { bots: ID };
+      update.$pull = { guids: ID };
+    } else {
+      update.$addToSet = { guids: ID };
+      update.$pull = { bots: ID };
+    }
     return { updateOne: { filter, update, upsert: true } };
   });
   const collection = await db.collection({ dbName: MONGO_DB_NAME, name: 'event-email-clicks' });
   log(`Found ${ops.length} click events to upsert`);
-  if (ops.length) {
-    const r = await collection.bulkWrite(ops);
-    log(r);
-  }
-
-  // flag events as processed
-  log(`Sending ${messages.length} events to the 'clicks-processed' queue...`);
-  await batchSend({
-    queueName: 'clicks-processed',
-    values: messages,
-    builder: (message, i) => ({ Id: `${message.row.ID}__${i}`, MessageBody: JSON.stringify(message) }),
-  });
-  log('Send complete.');
-
+  if (ops.length) await collection.bulkWrite(ops);
   log('DONE');
   if (!AWS_EXECUTION_ENV) await db.close();
 };
