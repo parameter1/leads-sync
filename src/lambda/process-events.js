@@ -97,6 +97,8 @@ exports.handler = async (event = {}, context = {}) => {
   const collection = await db.collection({ dbName: MONGO_DB_NAME, name: 'event-email-clicks' });
   log(`Found ${ops.length} click events to upsert`);
   if (ops.length) await collection.bulkWrite(ops);
+  // ensure guids is always an array
+  await collection.updateMany({ guids: { $exists: false } }, { $set: { guids: [] } });
   log('DONE');
   if (!AWS_EXECUTION_ENV) await db.close();
 };
