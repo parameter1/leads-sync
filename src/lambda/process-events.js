@@ -14,6 +14,8 @@ const upsertEmailSends = require('./process-events/upsert-email-sends');
 const upsertEmailSendUrls = require('./process-events/upsert-email-send-urls');
 const upsertIdentities = require('./process-events/upsert-identities');
 
+const jobsToSkip = require('../marketing-cloud/jobs-to-skip');
+
 const { log } = console;
 const db = factory();
 
@@ -26,6 +28,7 @@ exports.handler = async (event = {}, context = {}) => {
   // create unique sets of jobIds, subscriberIds; and ack-to-job map
   const { jobIdSet, subIdSet, ackMap } = messages.reduce((data, message) => {
     const { JobID, SubscriberID } = message.row;
+    if (jobsToSkip[JobID]) return data;
     data.jobIdSet.add(JobID);
     data.subIdSet.add(SubscriberID);
     data.ackMap.set(message.ack, JobID);

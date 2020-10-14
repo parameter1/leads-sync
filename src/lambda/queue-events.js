@@ -4,13 +4,9 @@ const extractAck = require('../utils/extract-ack');
 const getRows = require('../marketing-cloud/get-rows');
 const batchSend = require('../utils/sqs-batch-send');
 const lambda = require('../lambda');
+const jobsToSkip = require('../marketing-cloud/jobs-to-skip');
 
 const { log } = console;
-
-const jobsToSkip = {
-  289294: true, // old job where email was deleted
-  603177: true, // promo job sent from DDT @todo determine how to handle both BUs
-};
 
 exports.handler = async (event = {}) => {
   // change this to a time relative to current invoke date
