@@ -40,6 +40,7 @@ exports.handler = async (event = {}, context = {}) => {
     log('No sends to process.');
     log('DONE');
     if (!AWS_EXECUTION_ENV) await db.close();
+    return;
   }
 
   // load sends and subscribers from marketing cloud
