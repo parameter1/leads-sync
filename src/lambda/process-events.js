@@ -35,6 +35,13 @@ exports.handler = async (event = {}, context = {}) => {
     return data;
   }, { jobIdSet: new Set(), subIdSet: new Set(), ackMap: new Map() });
 
+  if (!jobIdSet.size) {
+    // nothing to process. end.
+    log('No sends to process.');
+    log('DONE');
+    if (!AWS_EXECUTION_ENV) await db.close();
+  }
+
   // load sends and subscribers from marketing cloud
   const [sends, subscribers] = await Promise.all([
     loadSends({ idSet: jobIdSet }),
