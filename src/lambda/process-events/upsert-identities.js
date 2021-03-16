@@ -18,6 +18,12 @@ const attrMap = {
   'NAICS Code': 'attributes.NAICS Code',
 };
 
+const getEmailDomain = (email) => {
+  if (!email) return '';
+  const parts = email.split('@');
+  return parts[1].trim().toLowerCase();
+};
+
 module.exports = async ({ subscribers, db }) => {
   log('Processing identities...');
   const now = new Date();
@@ -46,12 +52,13 @@ module.exports = async ({ subscribers, db }) => {
       inactiveCustomerIds: [],
       inactiveCampaignIds: [],
       inactiveLineItemIds: [],
-      domainExcluded: false,
       createdAt: now,
       __v: 0,
     };
+    const emailAddress = sub.EmailAddress.trim().toLowerCase();
     const $set = {
-      emailAddress: sub.EmailAddress.trim().toLowerCase(),
+      emailAddress,
+      emailDomain: getEmailDomain(emailAddress),
       ...attrs,
       fieldCount,
       'externalSource.createdAt': sub.CreatedDate,
